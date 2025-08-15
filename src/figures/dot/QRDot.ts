@@ -33,6 +33,13 @@ export default class QRDot {
       case dotTypes.extraRounded:
         drawFunction = this._drawExtraRounded;
         break;
+      case dotTypes.star:
+        drawFunction = this._drawStar;
+        break;
+      case dotTypes.heart:
+        drawFunction = this._drawHeart;
+        break;
+
       case dotTypes.square:
       default:
         drawFunction = this._drawSquare;
@@ -89,9 +96,9 @@ export default class QRDot {
         this._element.setAttribute(
           "d",
           `M ${x} ${y}` + //go to top left position
-            `v ${size}` + //draw line to left bottom corner
-            `h ${size / 2}` + //draw line to left bottom corner + half of size right
-            `a ${size / 2} ${size / 2}, 0, 0, 0, 0 ${-size}` // draw rounded corner
+          `v ${size}` + //draw line to left bottom corner
+          `h ${size / 2}` + //draw line to left bottom corner + half of size right
+          `a ${size / 2} ${size / 2}, 0, 0, 0, 0 ${-size}` // draw rounded corner
         );
       }
     });
@@ -108,10 +115,10 @@ export default class QRDot {
         this._element.setAttribute(
           "d",
           `M ${x} ${y}` + //go to top left position
-            `v ${size}` + //draw line to left bottom corner
-            `h ${size}` + //draw line to right bottom corner
-            `v ${-size / 2}` + //draw line to right bottom corner + half of size top
-            `a ${size / 2} ${size / 2}, 0, 0, 0, ${-size / 2} ${-size / 2}` // draw rounded corner
+          `v ${size}` + //draw line to left bottom corner
+          `h ${size}` + //draw line to right bottom corner
+          `v ${-size / 2}` + //draw line to right bottom corner + half of size top
+          `a ${size / 2} ${size / 2}, 0, 0, 0, ${-size / 2} ${-size / 2}` // draw rounded corner
         );
       }
     });
@@ -128,9 +135,9 @@ export default class QRDot {
         this._element.setAttribute(
           "d",
           `M ${x} ${y}` + //go to top left position
-            `v ${size}` + //draw line to left bottom corner
-            `h ${size}` + //draw line to right bottom corner
-            `a ${size} ${size}, 0, 0, 0, ${-size} ${-size}` // draw rounded top right corner
+          `v ${size}` + //draw line to left bottom corner
+          `h ${size}` + //draw line to right bottom corner
+          `a ${size} ${size}, 0, 0, 0, ${-size} ${-size}` // draw rounded top right corner
         );
       }
     });
@@ -147,11 +154,11 @@ export default class QRDot {
         this._element.setAttribute(
           "d",
           `M ${x} ${y}` + //go to left top position
-            `v ${size / 2}` + //draw line to left top corner + half of size bottom
-            `a ${size / 2} ${size / 2}, 0, 0, 0, ${size / 2} ${size / 2}` + // draw rounded left bottom corner
-            `h ${size / 2}` + //draw line to right bottom corner
-            `v ${-size / 2}` + //draw line to right bottom corner + half of size top
-            `a ${size / 2} ${size / 2}, 0, 0, 0, ${-size / 2} ${-size / 2}` // draw rounded right top corner
+          `v ${size / 2}` + //draw line to left top corner + half of size bottom
+          `a ${size / 2} ${size / 2}, 0, 0, 0, ${size / 2} ${size / 2}` + // draw rounded left bottom corner
+          `h ${size / 2}` + //draw line to right bottom corner
+          `v ${-size / 2}` + //draw line to right bottom corner + half of size top
+          `a ${size / 2} ${size / 2}, 0, 0, 0, ${-size / 2} ${-size / 2}` // draw rounded right top corner
         );
       }
     });
@@ -314,4 +321,47 @@ export default class QRDot {
 
     this._basicSquare({ x, y, size, rotation: 0 });
   }
+  _drawStar({ x, y, size }: DrawArgs): void {
+    const centerX = x + size / 2;
+    const centerY = y + size / 2;
+    const spikes = 5;
+    const outerRadius = size / 2;
+    const innerRadius = size / 4;
+    let rotation = Math.PI / 2 * 3;
+    let step = Math.PI / spikes;
+    let points: string[] = [];
+    for (let i = 0; i < spikes; i++) {
+      // Outer point
+      points.push(
+        (centerX + Math.cos(rotation) * outerRadius) + "," +
+        (centerY + Math.sin(rotation) * outerRadius)
+      );
+      rotation += step;
+      // Inner point
+      points.push(
+        (centerX + Math.cos(rotation) * innerRadius) + "," +
+        (centerY + Math.sin(rotation) * innerRadius)
+      );
+      rotation += step;
+    }
+    // Tạo SVG element
+    this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    this._element.setAttribute("points", points.join(" "));
+  }
+  _drawHeart({ x, y, size }: DrawArgs): void {
+    const path = this._window.document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const cx = x + size / 2;
+    const cy = y + size / 2;
+    const s = size / 2;
+    // Path trái tim tỉ lệ cân đối
+    const d = `
+    M ${cx},${cy + s / 2}
+    C ${cx + s},${cy - s / 3} ${cx + s * 0.6},${cy - s} ${cx},${cy - s / 4}
+    C ${cx - s * 0.6},${cy - s} ${cx - s},${cy - s / 3} ${cx},${cy + s / 2}
+    Z
+  `;
+    path.setAttribute("d", d);
+    this._element = path;
+  }
+
 }

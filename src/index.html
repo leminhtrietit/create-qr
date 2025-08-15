@@ -9,6 +9,8 @@
 </head>
 <body>
 <div id="canvas"></div>
+<script src="../lib/qr-code-styling.js"></script>
+
 <script type="application/javascript" charset="utf-8">
   // const options = {
   //   type: "svg",
@@ -48,14 +50,9 @@
     "height": 500, // any number
     "margin": 120, // any number
     dotsOptions: {
-      type: "dots",
-    },
-    cornersSquareOptions: {
-      type: "square",
-    },
-    cornersDotOptions: {
-      type: "square",
-    },
+    type: "heart", // dot type vừa thêm!
+    color: "#ff9900"    },
+
   };
 
   const qrCode = new QRCodeStyling(options);
